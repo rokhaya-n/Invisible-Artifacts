@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Randomized Full-Screen Image</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body, html {
+      height: 100%;
+      overflow: hidden;
+    }
+    .image-container {
+      height: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .image-container img {
+      height: 100%;
+      width: 100%;
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body>
+  <div class="image-container">
+    <img id="randomImage" src="" alt="Random Image">
+  </div>
+
+  <script>
+    let images = [];
+
+    async function fetchImages() {
+      try {
+        const response = await fetch('images.json');
+        const data = await response.json();
+        if (data && data.images) {
+          images = data.images;
+          updateImage(); // Show the first image immediately
+        } else {
+          console.error('No images found in the JSON file.');
+        }
+      } catch (error) {
+        console.error('Error fetching the JSON file:', error);
+      }
+    }
+
+    function updateImage() {
+      if (images.length === 0) return;
+
+      const imgElement = document.getElementById('randomImage');
+      const randomImage = images[Math.floor(Math.random() * images.length)];
+
+      // Preload the new image
+      const newImage = new Image();
+      newImage.src = randomImage;
+      newImage.onload = () => {
+        imgElement.src = newImage.src; // Instantly replace the image with no effect
+      };
+    }
+
+    // Initial fetch and image update
+    fetchImages();
+
+    // Change image every second
+    setInterval(updateImage, 1000);
+  </script>
+</body>
+</html>
